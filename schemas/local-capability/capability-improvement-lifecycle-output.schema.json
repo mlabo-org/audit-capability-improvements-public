@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audit-capability-improvements/capability-improvement-lifecycle-output/v1",
+  "title": "Capability Improvement Lifecycle Output",
+  "description": "The complete first handoff from an indexed audit, source-local triage, or requested repair/terminal disposition. Artifact references are source-local typed references, not broker-managed artifact ports.",
+  "type": "object",
+  "required": [
+    "operation",
+    "outcome",
+    "summary",
+    "repositoryGroups",
+    "artifacts",
+    "nextActions",
+    "markerState",
+    "dispatchStatus",
+    "validation",
+    "unresolvedRisks",
+    "authorityRequired"
+  ],
+  "properties": {
+    "operation": {
+      "enum": [
+        "audit_index",
+        "triage",
+        "repair_disposition"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "completed",
+        "needs_authority",
+        "blocked",
+        "unrecorded"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repositoryGroups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sourceRepository",
+          "classification",
+          "status"
+        ],
+        "properties": {
+          "sourceRepository": {
+            "type": "string",
+            "pattern": "^/"
+          },
+          "classification": {
+            "enum": [
+              "close_ready",
+              "repair_required",
+              "monitor_required",
+              "blocked",
+              "monitor",
+              "repair_candidate",
+              "not_applicable"
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "pending",
+              "blocked",
+              "unrecorded"
+            ]
+          },
+          "eventArtifacts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^/"
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "reference"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "event",
+              "proposal",
+              "resolution",
+              "app_state_resolution",
+              "monitor_disposition",
+              "retirement_disposition",
+              "marker"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nextActions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "markerState": {
+      "enum": [
+        "not_applicable",
+        "pending",
+        "processing",
+        "closed",
+        "unchanged",
+        "blocked"
+      ]
+    },
+    "dispatchStatus": {
+      "enum": [
+        "not_requested",
+        "not_applicable",
+        "ready",
+        "dispatched",
+        "blocked"
+      ]
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "unresolvedRisks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authorityRequired": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "authority",
+          "reason"
+        ],
+        "properties": {
+          "authority": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

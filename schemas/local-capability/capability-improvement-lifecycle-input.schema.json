@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audit-capability-improvements/capability-improvement-lifecycle-input/v1",
+  "title": "Capability Improvement Lifecycle Input",
+  "description": "A concrete request to audit indexed capability friction, triage one authoritative source repository, or route an authorized repair or terminal disposition. No credentials, tokens, raw session content, or private chat history are accepted.",
+  "type": "object",
+  "required": [
+    "operation"
+  ],
+  "properties": {
+    "operation": {
+      "enum": [
+        "audit_index",
+        "triage",
+        "repair_disposition"
+      ]
+    },
+    "targetCwd": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "Absolute authoritative source Git repository for triage or disposition."
+    },
+    "threadId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Optional indexed Codex thread to narrow an audit or required thread for marker closure."
+    },
+    "disposition": {
+      "enum": [
+        "repair",
+        "monitor",
+        "retire",
+        "close"
+      ]
+    },
+    "proposalRef": {
+      "type": "string",
+      "pattern": "^artifact:",
+      "description": "Exact validated repair-plan artifact reference for repair or monitor disposition."
+    },
+    "eventArtifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^/"
+      },
+      "uniqueItems": true,
+      "description": "Exact absolute source-local event artifact paths for retirement or marker closure."
+    },
+    "capabilityId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Capability identifier to retire; it must match every supplied event artifact."
+    },
+    "retirementReason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "replacementCapabilityId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repairIntent": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "The user-authorized repair objective to use only after triage returns handoff_ready."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "triage"
+          }
+        },
+        "required": [
+          "operation"
+        ]
+      },
+      "then": {
+        "required": [
+          "targetCwd"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "repair_disposition"
+          }
+        },
+        "required": [
+          "operation"
+        ]
+      },
+      "then": {
+        "required": [
+          "targetCwd",
+          "disposition"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "const": "repair"
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "required": [
+          "proposalRef",
+          "repairIntent"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "const": "monitor"
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "required": [
+          "proposalRef"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "const": "retire"
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "required": [
+          "capabilityId",
+          "eventArtifacts",
+          "retirementReason"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "const": "close"
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "required": [
+          "threadId",
+          "eventArtifacts"
+        ]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

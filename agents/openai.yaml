@@ -1,0 +1,6 @@
+interface:
+  display_name: "Capability Improvements Audit (Public)"
+  short_description: "Audit indexed friction, repairs, and retirements"
+  default_prompt: "Use $audit-capability-improvements-public to audit capability friction by repository and route validated repair, retirement, disposition, or closure."
+policy:
+  allow_implicit_invocation: true
